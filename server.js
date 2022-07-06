@@ -5,6 +5,7 @@ const cors = require("cors");
 const { connection } = require("./api/init.model");
 const rootRouter = require("./api/init.router");
 const relationship = require("./api/relationship");
+const { msg } = require("./api/message.controller");
 const port = process.env.PORT || 8888;
 
 app.use(cors());
@@ -52,6 +53,9 @@ app.get("/", async (req, res) => {
   });
 });
 rootRouter(app);
+app.get("/*" || "/api/v1/*", (req, res) => {
+  msg(res, "404 not found", undefined, undefined, false);
+});
 
 app.listen(port, () => {
   console.log(`Server is running http://localhost:${port}`);
