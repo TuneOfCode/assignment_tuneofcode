@@ -4,16 +4,24 @@ const pagination = async (
   table,
   page = PAGE,
   limit = LIMIT,
-  condition = {}
+  condition = {},
+  attributes = [],
+  include = []
 ) => {
   const offset = (page - 1) * limit;
   try {
-    const records = await table.findAndCountAll({
+    const records = await table.findAll({
       where: condition,
       limit: limit,
       offset: offset,
+      distinct: true,
+      attributes: attributes,
+      include: include,
     });
-    const rows = records.count;
+    const AllRecord = await table.findAll({
+      where: condition,
+    });
+    const rows = AllRecord.length;
     const pages = Math.ceil(rows / limit);
     const paginate = {
       limit: limit,
@@ -21,9 +29,9 @@ const pagination = async (
       page: page,
       total_page: pages,
     };
-    if (page < offset)
+    if (page > pages)
       return { data: [{ message: "No data" }], paginate: paginate };
-    return { data: records.rows, paginate: paginate };
+    return { data: records, paginate: paginate };
   } catch (error) {
     console.log("Error: ", error);
     throw error;

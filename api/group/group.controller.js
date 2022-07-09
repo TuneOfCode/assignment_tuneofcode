@@ -8,37 +8,37 @@ const GroupController = {
     try {
       const { data, paginate } = await GroupService.getListGroup(req);
       if (data.errors) {
-        return msg(res, data.errors, undefined, undefined, false);
+        return msg(res, data.errors.message, undefined, undefined, 400, false);
       }
       return msg(res, "OK", data, paginate);
     } catch (error) {
-      msg(res, error);
+      return msg(res, error);
     }
   },
   getDetailGroup: async (req, res) => {
     try {
       const data = await GroupService.getDetailGroup(req.params.id);
       if (data.errors) {
-        return msg(res, data.errors, undefined, undefined, false);
+        return msg(res, data.errors.message, undefined, undefined, 400, false);
       }
       return msg(res, "OK", data);
     } catch (error) {
-      msg(res, error);
+      return msg(res, error);
     }
   },
   studying: async (req, res) => {
     try {
       const data = await GroupService.studying();
       if (data.errors) {
-        return msg(res, data.errors, undefined, undefined, false);
+        return msg(res, data.errors.message, undefined, undefined, 400, false);
       }
       return msg(
         res,
-        "OK",
-        `${data.count_group} study groups with ${data.students_studying_on_group} students`
+        `${data.count_group} study groups with ${data.students_studying_on_group} students`,
+        data.count_group
       );
     } catch (error) {
-      msg(res, error);
+      return msg(res, error);
     }
   },
   create: async (req, res) => {
@@ -63,6 +63,7 @@ const GroupController = {
           `Leader id ${leader_id} doesn't a leader or not exist`,
           undefined,
           undefined,
+          400,
           false
         );
       }
@@ -72,6 +73,7 @@ const GroupController = {
           `Per leader only max teach 4 group`,
           undefined,
           undefined,
+          400,
           false
         );
       }
@@ -82,34 +84,35 @@ const GroupController = {
           `name ${name} already exist. Please enter a another name !`,
           undefined,
           undefined,
+          400,
           false
         );
       }
       return msg(res, "created successfully", data);
     } catch (error) {
-      msg(res, error);
+      return msg(res, error);
     }
   },
   update: async (req, res) => {
     try {
       const data = await GroupService.update(req.body, req.params.id);
       if (data.errors) {
-        return msg(res, data.errors, undefined, undefined, false);
+        return msg(res, data.errors.message, undefined, undefined, 400, false);
       }
       return msg(res, "updated successfully", data);
     } catch (error) {
-      msg(res, error);
+      return msg(res, error);
     }
   },
   destroy: async (req, res) => {
     try {
       const data = await GroupService.destroy(req.params.id);
       if (data.errors) {
-        return msg(res, data.errors, undefined, undefined, false);
+        return msg(res, data.errors.message, undefined, undefined, 400, false);
       }
       return msg(res, "destroyed successfully", data);
     } catch (error) {
-      msg(res, error);
+      return msg(res, error);
     }
   },
 };

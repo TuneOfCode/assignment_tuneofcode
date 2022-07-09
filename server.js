@@ -33,6 +33,9 @@ app.get("/", async (req, res) => {
       {
         "[DELETE] detroy_user": `http://localhost:${port}/api/v1/users/destroy/:id`,
       },
+      {
+        "[DELETE] detroy_join_group_of_student": `http://localhost:${port}/api/v1/users/destroy/join-group/:studentId`,
+      },
       { "[GET] groups": `http://localhost:${port}/api/v1/groups` },
       {
         "[GET] group_detail": `http://localhost:${port}/api/v1/groups/group/detail/{id}`,

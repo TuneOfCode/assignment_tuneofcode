@@ -11,5 +11,9 @@ router.post("/join-group", UserController.joinGroup);
 router.post("/create", UserController.create);
 router.patch("/edit/:id", UserController.update);
 router.delete("/destroy/:id", UserController.destroy);
+router.delete(
+  "/destroy/join-group/:studentId",
+  UserController.destroyJoinGroup
+);
 
 module.exports = router;

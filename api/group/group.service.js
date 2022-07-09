@@ -1,7 +1,6 @@
 const { Op } = require("sequelize");
 const { LIMIT, PAGE } = require("../constant");
 const Group_User = require("../group_user/group_user.model");
-const { sequelize } = require("../init.model");
 const User = require("../user/user.model");
 const pagination = require("../util.db");
 const Group = require("./group.model");
@@ -9,50 +8,72 @@ const Group = require("./group.model");
 const GroupService = {
   getListGroup: async (req) => {
     const query = req.query;
+    const { search, filter } = query;
     const limit = +query.limit || LIMIT;
     const page = +query.page || PAGE;
+    const attributes = [
+      "id",
+      "name",
+      "date_start",
+      "subject",
+      "created_at",
+      "updated_at",
+    ];
+    const include = [
+      {
+        model: User,
+        as: "leader",
+        attributes: ["id", "name", "email", "avatar"],
+      },
+      {
+        model: User,
+        as: "students",
+        attributes: ["id", "name", "email", "avatar"],
+        through: { attributes: [] },
+      },
+    ];
+    let groups;
     try {
-      const groups = await Group.findAll({
+      groups = await Group.findAll({
         where: {
           [Op.or]: [
             {
-              name: { [Op.like]: `%${query.search ? query.search : ""}%` },
+              name: {
+                [Op.like]: `%${search ? search : ""}%`,
+              },
             },
             {
               subject: {
-                [Op.like]: `%${query.search ? query.search : ""}%`,
+                [Op.like]: `%${search ? search : ""}%`,
               },
             },
             {
               date_start: {
-                [Op.like]: `%${query.search ? query.search : ""}%`,
+                [Op.like]: `%${search ? search : ""}%`,
               },
             },
           ],
         },
-        attributes: [
-          "id",
-          "name",
-          "date_start",
-          "subject",
-          "created_at",
-          "updated_at",
-        ],
-        include: [
-          {
-            model: User,
-            as: "leader",
-            attributes: ["id", "name", "email", "avatar"],
-          },
-          {
-            model: User,
-            as: "students",
-            attributes: ["id", "name", "email", "avatar"],
-            through: { attributes: [] },
-          },
-        ],
+        attributes: attributes,
+        include: include,
       });
-      const { data, paginate } = await pagination(Group, page, limit);
+      if (filter) {
+        groups = await Group.findAll({
+          where: {
+            name: filter || [],
+          },
+          attributes: attributes,
+          include: include,
+        });
+      }
+      const { data, paginate } = await pagination(
+        Group,
+        page,
+        limit,
+        {},
+        attributes,
+        include
+      );
       if (query.limit || query.page) {
         return { data: data, paginate: paginate };
       }

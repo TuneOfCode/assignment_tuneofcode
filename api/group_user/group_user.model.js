@@ -4,18 +4,13 @@ const { sequelize } = require("../init.model");
 const User = require("../user/user.model");
 
 const Group_User = sequelize.define("groups_users", {
-  id: {
-    autoIncrement: true,
+  user_id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
   },
-  user_id: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
   group_id: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    primaryKey: true,
   },
   createdAt: {
     field: "created_at",
