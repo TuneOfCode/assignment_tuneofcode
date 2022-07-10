@@ -85,7 +85,7 @@ const GroupService = {
   },
   getDetailGroup: async (inputId) => {
     try {
-      const group = await Group.findOne({
+      const group = await Group.findAll({
         where: {
           id: inputId,
         },

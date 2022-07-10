@@ -177,7 +177,6 @@ const UserService = {
             },
           ],
         },
-        limit: limit,
         distinct: true,
         attributes: attributes,
         include: include,
@@ -291,7 +290,7 @@ const UserService = {
             status: false,
           };
         }
-        if (count_user_join_group_equal_four > 3 || group_ids.length >= 4) {
+        if (count_user_join_group_equal_four > 3 || group_ids.length >= 5) {
           return {
             message: `Per user only max join 4 group`,
             statusCode: 400,

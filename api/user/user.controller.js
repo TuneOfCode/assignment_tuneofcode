@@ -9,7 +9,14 @@ const UserController = {
     try {
       const { data, paginate } = await UserService.getAll(req);
       if (data.errors) {
-        return msg(res, data.errors.message, undefined, undefined, 400, false);
+        return msg(
+          res,
+          data.errors[0].message,
+          undefined,
+          undefined,
+          400,
+          false
+        );
       }
       return msg(res, "OK", data, paginate);
     } catch (error) {
@@ -20,7 +27,14 @@ const UserController = {
     try {
       const { data, paginate } = await UserService.getListStudent(req);
       if (data.errors) {
-        return msg(res, data.errors.message, undefined, undefined, 400, false);
+        return msg(
+          res,
+          data.errors[0].message,
+          undefined,
+          undefined,
+          400,
+          false
+        );
       }
       return msg(res, "OK", data, paginate);
     } catch (error) {
@@ -31,7 +45,14 @@ const UserController = {
     try {
       const { data, paginate } = await UserService.getListLeader(req);
       if (data.errors) {
-        return msg(res, data.errors.message, undefined, undefined, 400, false);
+        return msg(
+          res,
+          data.errors[0].message,
+          undefined,
+          undefined,
+          400,
+          false
+        );
       }
       return msg(res, "OK", data, paginate);
     } catch (error) {
@@ -42,7 +63,14 @@ const UserController = {
     try {
       const data = await UserService.getDetailStudent(req.params.id);
       if (data.errors) {
-        return msg(res, data.errors.message, undefined, undefined, 400, false);
+        return msg(
+          res,
+          data.errors[0].message,
+          undefined,
+          undefined,
+          400,
+          false
+        );
       }
       return msg(res, "OK", data);
     } catch (error) {
@@ -53,7 +81,14 @@ const UserController = {
     try {
       const data = await UserService.registered();
       if (data.errors) {
-        return msg(res, data.errors.message, undefined, undefined, 400, false);
+        return msg(
+          res,
+          data.errors[0].message,
+          undefined,
+          undefined,
+          400,
+          false
+        );
       }
       return msg(res, `${data} student registered`, data);
     } catch (error) {
@@ -88,9 +123,10 @@ const UserController = {
         birth_date,
       });
       if (data.errors) {
+        console.log(">>>> ERROS: ", data.errors[0].message);
         return msg(
           res,
-          `email ${email} already exists. Please enter another email !`,
+          data.errors[0].message,
           undefined,
           undefined,
           400,
@@ -133,7 +169,14 @@ const UserController = {
       }
       const data = await UserService.update(req.body, req.params.id);
       if (data.errors) {
-        return msg(res, data.errors.message, undefined, undefined, 400, false);
+        return msg(
+          res,
+          data.errors[0].message,
+          undefined,
+          undefined,
+          400,
+          false
+        );
       }
       const payload = req.body;
       const payloads = { ...payload, id: +req.params.id };
@@ -148,7 +191,14 @@ const UserController = {
       await UserService.destroyJoinGroup(req.params.id);
       const data = await UserService.destroy(req.params.id);
       if (data.errors) {
-        return msg(res, data.errors.message, undefined, undefined, 400, false);
+        return msg(
+          res,
+          data.errors[0].message,
+          undefined,
+          undefined,
+          400,
+          false
+        );
       }
       return msg(res, "destroyed successfully", data);
     } catch (error) {
@@ -161,7 +211,14 @@ const UserController = {
         req.params.studentId
       );
       if (data.errors) {
-        return msg(res, data.errors.message, undefined, undefined, 400, false);
+        return msg(
+          res,
+          data.errors[0].message,
+          undefined,
+          undefined,
+          400,
+          false
+        );
       }
       return msg(res, message, data);
     } catch (error) {

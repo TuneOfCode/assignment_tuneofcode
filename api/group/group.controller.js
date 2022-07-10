@@ -8,7 +8,14 @@ const GroupController = {
     try {
       const { data, paginate } = await GroupService.getListGroup(req);
       if (data.errors) {
-        return msg(res, data.errors.message, undefined, undefined, 400, false);
+        return msg(
+          res,
+          data.errors[0].message,
+          undefined,
+          undefined,
+          400,
+          false
+        );
       }
       return msg(res, "OK", data, paginate);
     } catch (error) {
@@ -19,7 +26,14 @@ const GroupController = {
     try {
       const data = await GroupService.getDetailGroup(req.params.id);
       if (data.errors) {
-        return msg(res, data.errors.message, undefined, undefined, 400, false);
+        return msg(
+          res,
+          data.errors[0].message,
+          undefined,
+          undefined,
+          400,
+          false
+        );
       }
       return msg(res, "OK", data);
     } catch (error) {
@@ -30,7 +44,14 @@ const GroupController = {
     try {
       const data = await GroupService.studying();
       if (data.errors) {
-        return msg(res, data.errors.message, undefined, undefined, 400, false);
+        return msg(
+          res,
+          data.errors[0].message,
+          undefined,
+          undefined,
+          400,
+          false
+        );
       }
       return msg(
         res,
@@ -95,11 +116,38 @@ const GroupController = {
   },
   update: async (req, res) => {
     try {
+      const { leader_id } = req.body;
+      const payload = req.body;
+      if (leader_id) {
+        const user = await User.findOne({
+          where: {
+            id: leader_id,
+            is_leader: true,
+          },
+        });
+        if (!user) {
+          return msg(
+            res,
+            `Leader id ${leader_id} doesn't a leader or not exist`,
+            undefined,
+            undefined,
+            400,
+            false
+          );
+        }
+      }
       const data = await GroupService.update(req.body, req.params.id);
       if (data.errors) {
-        return msg(res, data.errors.message, undefined, undefined, 400, false);
+        return msg(
+          res,
+          data.errors[0].message,
+          undefined,
+          undefined,
+          400,
+          false
+        );
       }
-      return msg(res, "updated successfully", data);
+      return msg(res, "updated successfully", payload);
     } catch (error) {
       return msg(res, error);
     }
@@ -108,7 +156,14 @@ const GroupController = {
     try {
       const data = await GroupService.destroy(req.params.id);
       if (data.errors) {
-        return msg(res, data.errors.message, undefined, undefined, 400, false);
+        return msg(
+          res,
+          data.errors[0].message,
+          undefined,
+          undefined,
+          400,
+          false
+        );
       }
       return msg(res, "destroyed successfully", data);
     } catch (error) {
