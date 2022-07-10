@@ -1,8 +1,6 @@
-// const Group = require("../group/group.model");
-// const Group_User = require("../group_user/group_user.model");
 const { msg } = require("../message.controller");
-// const User = require("./user.model");
 const UserService = require("./user.service");
+const { validationResult } = require("express-validator");
 
 const UserController = {
   getAll: async (req, res) => {
@@ -115,6 +113,18 @@ const UserController = {
     try {
       const { name, email, sex, birth_place, birth_date, group_ids } = req.body;
       if (group_ids) console.log(">>>>>>> GROUP_IDS: ", group_ids);
+      const errorExistingEmail = validationResult(req);
+      if (!errorExistingEmail.isEmpty()) {
+        console.log(">>>>> Get errors: ", errorExistingEmail.errors[0].msg);
+        return msg(
+          res,
+          errorExistingEmail.errors[0].msg,
+          undefined,
+          undefined,
+          400,
+          false
+        );
+      }
       const data = await UserService.create({
         name,
         email,
@@ -122,17 +132,6 @@ const UserController = {
         birth_place,
         birth_date,
       });
-      if (data.errors) {
-        console.log(">>>> ERROS: ", data.errors[0].message);
-        return msg(
-          res,
-          data.errors[0].message,
-          undefined,
-          undefined,
-          400,
-          false
-        );
-      }
       const { id } = data;
       console.log(">>>>>>>> CURRENT ID: ", id);
       await UserService.joinGroup(req, id);

@@ -2,6 +2,7 @@ const { msg } = require("../message.controller");
 const User = require("../user/user.model");
 const Group = require("./group.model");
 const GroupService = require("./group.service");
+const { validationResult } = require("express-validator");
 
 const GroupController = {
   getListGroup: async (req, res) => {
@@ -98,17 +99,19 @@ const GroupController = {
           false
         );
       }
-      const data = await GroupService.create({ name, subject, leader_id });
-      if (data.errors) {
+      const errorExistingGroupName = validationResult(req);
+      if (!errorExistingGroupName.isEmpty()) {
+        console.log(">>>>> Get errors: ", errorExistingGroupName.errors[0].msg);
         return msg(
           res,
-          `name ${name} already exist. Please enter a another name !`,
+          errorExistingGroupName.errors[0].msg,
           undefined,
           undefined,
           400,
           false
         );
       }
+      const data = await GroupService.create({ name, subject, leader_id });
       return msg(res, "created successfully", data);
     } catch (error) {
       return msg(res, error);
