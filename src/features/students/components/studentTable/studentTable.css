@@ -1,0 +1,13 @@
+.button-create-icon {
+  border-right: none !important;
+  background-color: transparent;
+}
+
+.MuiDataGrid-columnHeader:focus,
+.css-r11z79-MuiDataGrid-root .MuiDataGrid-cell:focus-within,
+.css-r11z79-MuiDataGrid-root:focus-within
+  .MuiDataGrid-columnHeader--alignCenter:focus-within
+  .MuiDataGrid-columnHeaderTitleContainer:focus-within,
+.MuiDataGrid-cell:focus {
+  outline: solid #ed6c02 1px !important;
+}
