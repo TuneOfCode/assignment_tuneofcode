@@ -1,8 +1,8 @@
 const { host, database, username, password, dialect } = require("./db.config");
 const { Sequelize } = require("sequelize");
 const sequelize = new Sequelize(database, username, password, {
-  host,
-  dialect,
+  host: host,
+  dialect: dialect,
   define: {
     underscored: true,
   },
