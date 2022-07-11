@@ -8,7 +8,7 @@ const relationship = require("./api/relationship");
 const { msg } = require("./api/message.controller");
 const host = process.env.HOST || "localhost";
 const port = process.env.PORT || 8888;
-const domain = process.env.DOMAIN || `${host}:${port}`;
+const domain = process.env.DOMAIN || host; //  || `${host}:${port}`
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
