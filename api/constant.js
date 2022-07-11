@@ -1,4 +1,4 @@
 module.exports = {
-  LIMIT: 2,
+  LIMIT: 10,
   PAGE: 1,
 };

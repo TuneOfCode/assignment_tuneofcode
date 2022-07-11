@@ -1,14 +1,21 @@
 const express = require("express");
 const app = express();
-require("dotenv").config();
 const cors = require("cors");
 const { connection } = require("./api/init.model");
 const rootRouter = require("./api/init.router");
 const relationship = require("./api/relationship");
 const { msg } = require("./api/message.controller");
-const host = process.env.HOST || "localhost";
-const port = process.env.PORT || 8888;
-const domain = process.env.DOMAIN || host || `${host}:${port}`; //
+const {
+  port,
+  domain,
+  host,
+  username,
+  password,
+  database,
+  dialect,
+  db_host,
+  NODE_ENV,
+} = require("./api/config");
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
@@ -59,9 +66,18 @@ app.get("/", async (req, res) => {
 });
 rootRouter(app);
 app.get("/*" || "/api/v1/*", (req, res) => {
-  msg(res, "404 not found", undefined, undefined, 400, false);
+  msg(res, "404 Not Found", undefined, undefined, 400, false);
 });
-
+/* =================== TEST =================== */
+console.log(">>>>>>>> NODE_ENV: ", NODE_ENV);
+console.log(">>>>>>>> PORT: ", port);
+console.log(">>>>>>>> DOMAIN: ", domain);
+console.log(">>>>>>>> HOST: ", host);
+console.log(">>>>>>>> DATABASE HOST: ", db_host);
+console.log(">>>>>>>> USERNAME: ", username);
+console.log(">>>>>>>> PASSWORD: ", password);
+console.log(">>>>>>>> DATABASE: ", database);
+console.log(">>>>>>>> DIALECT: ", dialect);
 app.listen(port, () => {
   console.log(`Server is running http://${domain}`);
 });
