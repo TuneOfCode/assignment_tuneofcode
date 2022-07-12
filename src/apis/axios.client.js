@@ -1,10 +1,12 @@
-import axios from "axios";
-import { ROOT_API_URL } from "../constants/common.constant";
+import axios from 'axios';
+import queryString from 'query-string';
+import { ROOT_API_URL } from '../constants/common.constant';
 const axiosClient = axios.create({
-  baseURL: process.env.REACT_APP_ROOT_API || ROOT_API_URL || "",
+  baseURL: process.env.REACT_APP_ROOT_API || ROOT_API_URL || '',
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
+  paramsSerializer: (params) => queryString.stringify(params),
 });
 
 axiosClient.interceptors.request.use(
@@ -20,7 +22,7 @@ axiosClient.interceptors.response.use(
   },
   (error) => {
     const { status, data } = error.response;
-    console.log(error.response);
+    // console.log(error.response);
     if (status === 400) {
       const error = data.message;
       throw new Error(error);

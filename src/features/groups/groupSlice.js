@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import groupApi from '../../apis/group.api';
+import { PARAMS } from '../../constants/common.constant';
 import StorageKey from '../../constants/storage.key';
 export const getListGroupBox = createAsyncThunk('groups/getListGroupBox', async () => {
   const groups = await groupApi.getAll();
@@ -11,20 +12,23 @@ export const getListGroupBox = createAsyncThunk('groups/getListGroupBox', async 
   });
   return groupsIdAndName;
 });
-export const getListGroup = createAsyncThunk('groups/getListGroup', async () => {
-  const groups = await groupApi.getAll();
-  const newGroupArray = await groups.data.map((group) => {
-    const { id, name, subject, leader } = group;
-    return {
-      id,
-      name,
-      subject,
-      leader: leader.name,
-    };
-  });
-  localStorage.setItem(StorageKey.GROUPS, JSON.stringify(newGroupArray));
-  return newGroupArray;
-});
+export const getListGroup = createAsyncThunk(
+  'groups/getListGroup',
+  async (params = {}) => {
+    const groups = await groupApi.getAll(params);
+    const newGroupArray = await groups.data.map((group) => {
+      const { id, name, subject, leader } = group;
+      return {
+        id,
+        name,
+        subject,
+        leader: leader.name,
+      };
+    });
+    localStorage.setItem(StorageKey.GROUPS, JSON.stringify(newGroupArray));
+    return newGroupArray;
+  }
+);
 export const countStudyGroup = createAsyncThunk('groups/countStudyGroups', async () => {
   const count_study_groups = await groupApi.getCountGroupsAndCountStudentsStudying();
   return count_study_groups.data;
@@ -57,6 +61,20 @@ export const destroyGroup = createAsyncThunk('groups/destroy', async (id) => {
   const group = await groupApi.destroy(id);
   return group;
 });
+export const filtersGroup = createAsyncThunk('groups/filters', async (params) => {
+  const groups = await groupApi.getAll(params);
+  const newGroupArray = await groups.data.map((group) => {
+    const { id, name, subject, leader } = group;
+    return {
+      id,
+      name,
+      subject,
+      leader: leader.name,
+    };
+  });
+  localStorage.setItem(StorageKey.GROUPS, JSON.stringify(newGroupArray));
+  return newGroupArray;
+});
 const groupSlice = createSlice({
   name: 'groups',
   initialState: {
@@ -66,6 +84,12 @@ const groupSlice = createSlice({
     group_ID: 0,
     groupBox: [],
     listGroup: [],
+    params: {
+      search: '',
+      filter: '',
+      page: PARAMS.PAGE,
+      limit: PARAMS.LIMIT,
+    },
     count_study_groups: 0,
   },
   reducers: {
@@ -75,13 +99,17 @@ const groupSlice = createSlice({
     setGroupItem: (state, action) => {
       state.groupItem = action.payload;
     },
+    setIsLoading: (state, action) => {
+      state.isLoading = action.payload;
+    },
   },
   extraReducers: {
     [getListGroupBox.fulfilled]: (state, action) => {
       state.groupBox = action.payload;
     },
-    [getListGroup.pending]: (state) => {
-      state.isLoading = true;
+    [getListGroup.pending]: (state, action) => {
+      const meta = action.meta.arg;
+      if (meta) state.isLoading = true;
       state.status = 'pending';
     },
     [getListGroup.fulfilled]: (state, action) => {
@@ -164,8 +192,19 @@ const groupSlice = createSlice({
       state.isLoading = false;
       state.status = 'failure';
     },
+    [filtersGroup.fulfilled]: (state, action) => {
+      const { data } = action.payload;
+      state.isLoading = false;
+      state.listGroup = data;
+      state.status = 'success';
+    },
+    [filtersGroup.rejected]: (state) => {
+      state.isLoading = false;
+      state.status = 'failure';
+    },
   },
 });
 
-export const { actions, reducer } = groupSlice;
+export const { reducer } = groupSlice;
+export const actionsGroup = groupSlice.actions;
 export default reducer;

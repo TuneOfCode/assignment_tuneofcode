@@ -10,8 +10,7 @@ import DialogNotify from '../../../../components/dialog/DialogNotify';
 import Forms from '../../../../components/form/Forms';
 import CheckboxInput from '../../../../components/input/CheckboxInput';
 import LoadingTable from '../../../../components/loading/LoadingTable';
-import { SIZE, TABLE } from '../../../../constants/common.constant';
-import StorageKey from '../../../../constants/storage.key';
+import { DATA, SIZE, TABLE } from '../../../../constants/common.constant';
 import {
   actions,
   countStudentRegistered,
@@ -25,7 +24,7 @@ import './studentTable.css';
 function StudentTable() {
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
-  const { listStudent, isLoading } = useSelector((state) => state.student);
+  const { listStudent, isLoading, params } = useSelector((state) => state.student);
   const [rows, setRows] = React.useState([]);
   const [open, setOpen] = React.useState(false);
   const [studentId, setStudentId] = React.useState();
@@ -33,9 +32,12 @@ function StudentTable() {
     dispatch(getListStudent());
   }, [dispatch]);
   React.useEffect(() => {
-    const Students = JSON.parse(localStorage.getItem(StorageKey.STUDENTS));
-    setRows(Students);
-  }, [listStudent]);
+    const callGetLocalstorage = async () => {
+      const Students = await DATA.STUDENTS();
+      setRows(Students);
+    };
+    callGetLocalstorage();
+  }, [listStudent, params]);
 
   const [studentInForm, setStudentInForm] = React.useState(() => {
     return {

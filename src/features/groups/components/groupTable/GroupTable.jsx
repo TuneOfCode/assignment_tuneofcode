@@ -10,10 +10,9 @@ import DialogNotify from '../../../../components/dialog/DialogNotify';
 import Forms from '../../../../components/form/Forms';
 import CheckboxInput from '../../../../components/input/CheckboxInput';
 import LoadingTable from '../../../../components/loading/LoadingTable';
-import { SIZE, TABLE } from '../../../../constants/common.constant';
-import StorageKey from '../../../../constants/storage.key';
+import { DATA, SIZE, TABLE } from '../../../../constants/common.constant';
 import {
-  actions,
+  actionsGroup,
   countStudyGroup,
   destroyGroup,
   getGroupDetail,
@@ -25,18 +24,20 @@ import './groupTable.css';
 function GroupTable() {
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
-  const { listGroup, isLoading } = useSelector((state) => state.group);
+  const { listGroup, isLoading, params } = useSelector((state) => state.group);
   const [rows, setRows] = React.useState([]);
   const [open, setOpen] = React.useState(false);
   const [groupId, setGroupId] = React.useState();
   React.useEffect(() => {
     dispatch(getListGroup());
-    setRows(listGroup);
   }, [dispatch]);
   React.useEffect(() => {
-    const Groups = JSON.parse(localStorage.getItem(StorageKey.GROUPS));
-    setRows(Groups);
-  }, [listGroup]);
+    const callGetLocalstorage = async () => {
+      const Groups = await DATA.GROUPS();
+      setRows(Groups);
+    };
+    callGetLocalstorage();
+  }, [listGroup, params]);
 
   const [groupInForm, setGroupInForm] = React.useState(() => {
     return {
@@ -60,7 +61,7 @@ function GroupTable() {
         const groupResult = unwrapResult(groupDetail);
         // console.log(`Group Detail id ${id}: `, groupResult);
         setGroupInForm({ data: groupResult, groupIDForm: id });
-        dispatch(actions.setGroup_ID(id));
+        dispatch(actionsGroup.setGroup_ID(id));
       } catch (error) {
         console.log('ERROR EDIT STUDENT: ', error);
       }
@@ -70,7 +71,7 @@ function GroupTable() {
     []
   );
   React.useEffect(() => {
-    dispatch(actions.setGroupItem(groupInForm.data));
+    dispatch(actionsGroup.setGroupItem(groupInForm.data));
   }, []);
   const handleDelete = React.useCallback((id) => {
     setTimeout(async () => {
