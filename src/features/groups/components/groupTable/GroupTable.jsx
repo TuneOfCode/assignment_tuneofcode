@@ -10,13 +10,12 @@ import DialogNotify from '../../../../components/dialog/DialogNotify';
 import Forms from '../../../../components/form/Forms';
 import CheckboxInput from '../../../../components/input/CheckboxInput';
 import LoadingTable from '../../../../components/loading/LoadingTable';
-import { DATA, SIZE, TABLE } from '../../../../constants/common.constant';
+import { PARAMS, SIZE, TABLE } from '../../../../constants/common.constant';
 import {
   actionsGroup,
   countStudyGroup,
   destroyGroup,
   getGroupDetail,
-  getListGroup,
 } from '../../groupSlice';
 import GroupProcessEditForm from '../groupForm/GroupProcessEditForm';
 import './groupTable.css';
@@ -24,20 +23,13 @@ import './groupTable.css';
 function GroupTable() {
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
-  const { listGroup, isLoading, params } = useSelector((state) => state.group);
+  const { listGroup, isLoading } = useSelector((state) => state.group);
   const [rows, setRows] = React.useState([]);
   const [open, setOpen] = React.useState(false);
   const [groupId, setGroupId] = React.useState();
   React.useEffect(() => {
-    dispatch(getListGroup());
-  }, [dispatch]);
-  React.useEffect(() => {
-    const callGetLocalstorage = async () => {
-      const Groups = await DATA.GROUPS();
-      setRows(Groups);
-    };
-    callGetLocalstorage();
-  }, [listGroup, params]);
+    setRows(listGroup);
+  }, [listGroup]);
 
   const [groupInForm, setGroupInForm] = React.useState(() => {
     return {
@@ -81,7 +73,6 @@ function GroupTable() {
         const action = destroyGroup(id);
         const destroy = await dispatch(action);
         const groupResult = unwrapResult(destroy);
-        dispatch(getListGroup());
         dispatch(countStudyGroup());
         enqueueSnackbar(groupResult.message, { variant: 'success' });
       } catch (error) {
@@ -129,7 +120,13 @@ function GroupTable() {
     <>
       {isLoading && <LoadingTable />}
       {!isLoading && (
-        <Box style={{ height: 375, width: '100%' }}>
+        <Box
+          sx={{
+            height: SIZE.HEIGHT_TABLE,
+            width: '100%',
+            overflowX: { xs: 'auto', md: 'hidden' },
+          }}
+        >
           <DialogNotify
             open={open}
             handleClose={handleClose}
@@ -150,8 +147,8 @@ function GroupTable() {
             rows={rows}
             columns={TABLE.COL_GROUP}
             checkboxSelection
-            pageSize={SIZE.ROWS}
-            rowsPerPageOptions={[SIZE.ROWS]}
+            pageSize={PARAMS.LIMIT || SIZE.ROWS}
+            rowsPerPageOptions={[PARAMS.LIMIT || SIZE.ROWS]}
           />
         </Box>
       )}

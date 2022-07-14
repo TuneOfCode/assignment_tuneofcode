@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import userApi from '../../apis/user.api';
-import { PARAMS } from '../../constants/common.constant';
 import StorageKey from '../../constants/storage.key';
 
 export const createStudent = createAsyncThunk('students/create', async (payload) => {
@@ -75,23 +74,6 @@ export const destroyStudent = createAsyncThunk('students/destroy', async (id) =>
   const student = await userApi.destroy(id);
   return student;
 });
-export const filtersStudent = createAsyncThunk('students/filters', async (params) => {
-  const students = await userApi.getListStudent(params);
-  const newStudentArray = await students.data.map((student) => {
-    const { id, avatar, name, sex, birth_place, birth_date, groups } = student;
-    const groupsName = groups.map((item) => item.name).join(', ');
-    return {
-      id,
-      avatar,
-      name,
-      sex,
-      placeAndDatebirth: `${birth_place}, ${birth_date}`,
-      groups: groupsName,
-    };
-  });
-  localStorage.setItem(StorageKey.STUDENTS, JSON.stringify(newStudentArray));
-  return newStudentArray;
-});
 
 const studentSlice = createSlice({
   name: 'students',
@@ -105,8 +87,6 @@ const studentSlice = createSlice({
     params: {
       search: '',
       filter: '',
-      page: PARAMS.PAGE,
-      limit: PARAMS.LIMIT,
     },
     count_student_registered: 0,
   },
@@ -120,11 +100,14 @@ const studentSlice = createSlice({
     setSearch: (state, action) => {
       state.params.search = action.payload;
     },
+    setFilter: (state, action) => {
+      state.params.filter = action.payload;
+    },
     setIsLoading: (state, action) => {
       state.isLoading = action.payload;
     },
-    setStudentSearch: (state, action) => {
-      state.studentSearch = action.payload;
+    setDebounce: (state, action) => {
+      state.debounce = action.payload;
     },
   },
   extraReducers: {
@@ -216,16 +199,6 @@ const studentSlice = createSlice({
       state.status = 'success';
     },
     [destroyStudent.rejected]: (state) => {
-      state.isLoading = false;
-      state.status = 'failure';
-    },
-    [filtersStudent.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      state.isLoading = false;
-      state.listStudent = data;
-      state.status = 'success';
-    },
-    [filtersStudent.rejected]: (state) => {
       state.isLoading = false;
       state.status = 'failure';
     },

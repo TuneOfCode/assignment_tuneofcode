@@ -6,24 +6,19 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { Avatar, CssBaseline, Grid, InputAdornment, Typography } from '@mui/material';
 import { Box, Container } from '@mui/system';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import * as yup from 'yup';
 import SelectInput from '../../../../components/input/SelectInput';
 import TextInput from '../../../../components/input/TextInput';
-import { getListLeaderBox } from '../../../students/studentSlice';
 GroupFormCreate.propTypes = {
   onSubmit: PropTypes.func,
 };
 
 function GroupFormCreate(props) {
-  const dispatch = useDispatch();
   const { onSubmit } = props;
   const { listLeaderBox } = useSelector((state) => state.student);
-  useEffect(() => {
-    dispatch(getListLeaderBox());
-  }, [dispatch]);
   const schema = yup
     .object({
       name: yup.string().required('please enter field name'),

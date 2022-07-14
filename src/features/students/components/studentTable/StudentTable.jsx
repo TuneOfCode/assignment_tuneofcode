@@ -10,7 +10,7 @@ import DialogNotify from '../../../../components/dialog/DialogNotify';
 import Forms from '../../../../components/form/Forms';
 import CheckboxInput from '../../../../components/input/CheckboxInput';
 import LoadingTable from '../../../../components/loading/LoadingTable';
-import { DATA, SIZE, TABLE } from '../../../../constants/common.constant';
+import { PARAMS, SIZE, TABLE } from '../../../../constants/common.constant';
 import {
   actions,
   countStudentRegistered,
@@ -24,20 +24,14 @@ import './studentTable.css';
 function StudentTable() {
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
-  const { listStudent, isLoading, params } = useSelector((state) => state.student);
+  const { listStudent, isLoading } = useSelector((state) => state.student);
+
   const [rows, setRows] = React.useState([]);
   const [open, setOpen] = React.useState(false);
   const [studentId, setStudentId] = React.useState();
   React.useEffect(() => {
-    dispatch(getListStudent());
-  }, [dispatch]);
-  React.useEffect(() => {
-    const callGetLocalstorage = async () => {
-      const Students = await DATA.STUDENTS();
-      setRows(Students);
-    };
-    callGetLocalstorage();
-  }, [listStudent, params]);
+    setRows(listStudent);
+  }, [listStudent]);
 
   const [studentInForm, setStudentInForm] = React.useState(() => {
     return {
@@ -81,7 +75,6 @@ function StudentTable() {
         const action = destroyStudent(id);
         const destroy = await dispatch(action);
         const studentResult = unwrapResult(destroy);
-        dispatch(getListStudent());
         dispatch(countStudentRegistered());
         enqueueSnackbar(studentResult.message, { variant: 'success' });
       } catch (error) {
@@ -124,11 +117,17 @@ function StudentTable() {
   };
   TABLE.COL_STUDENT.pop();
   TABLE.COL_STUDENT.push(newFieldAction);
+  const [selectedRows, setSelectedRows] = React.useState([]);
   return (
     <>
       {isLoading && <LoadingTable />}
       {!isLoading && (
-        <Box style={{ height: 375, width: '100%' }}>
+        <Box
+          sx={{
+            height: SIZE.HEIGHT_TABLE,
+            width: '100%',
+          }}
+        >
           <DialogNotify
             open={open}
             handleClose={handleClose}
@@ -144,15 +143,23 @@ function StudentTable() {
               <StudentProcessEditForm closeDialog={handleClickCloseForms} />
             }
           />
+          {/* <pre style={{ fontSize: 10 }}>{JSON.stringify(selectedRows, null, 4)}</pre> */}
           <DataGrid
+            className="scrollbar"
             components={{
               BaseCheckbox: CheckboxInput,
             }}
             rows={rows}
             columns={TABLE.COL_STUDENT}
             checkboxSelection
-            pageSize={SIZE.ROWS}
-            rowsPerPageOptions={[SIZE.ROWS]}
+            onSelectionModelChange={(ids) => {
+              const selectedIDs = new Set(ids);
+              const selectedRows = rows.filter((row) => selectedIDs.has(row.id));
+
+              setSelectedRows(selectedRows);
+            }}
+            pageSize={PARAMS.LIMIT || SIZE.ROWS}
+            rowsPerPageOptions={[PARAMS.LIMIT || SIZE.ROWS]}
           />
         </Box>
       )}

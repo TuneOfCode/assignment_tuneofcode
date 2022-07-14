@@ -3,7 +3,7 @@ import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { actionsGroup, countStudyGroup, editGroup, getListGroup } from '../../groupSlice';
+import { countStudyGroup, editGroup, getListGroup } from '../../groupSlice';
 import GroupFormEdit from './GroupFormEdit';
 
 GroupProcessEditForm.propTypes = {
@@ -25,7 +25,6 @@ function GroupProcessEditForm(props) {
       // console.log('>>>> Forms Value: ', payload);
       const id = group_ID;
       // console.log('ID group update: ', id);
-      dispatch(actionsGroup.setGroup_ID(id));
       const action = editGroup({ payload, id });
       const groupEdit = await dispatch(action);
       const groupEditResult = unwrapResult(groupEdit);

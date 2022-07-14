@@ -1,26 +1,22 @@
 import { Avatar } from '@mui/material';
 import StorageKey from './storage.key';
 
-const DOMAIN = 'localhost';
-const PORT = '2208';
-const VERSION = 'v1';
-export const ROOT_API_URL = `http://${DOMAIN}:${PORT}/api/${VERSION}/`;
+const ENVIROMENT = 'development';
+export const ROOT_API_URL =
+  process.env.REACT_APP_ENV === ENVIROMENT
+    ? process.env.REACT_APP_DEV_ROOT_API
+    : process.env.REACT_APP_ROOT_API;
 export const PARAMS = {
-  LIMIT: 10,
+  LIMIT: 5,
   PAGE: 1,
 };
 export const SIZE = {
   ROWS: 5,
+  HEIGHT_TABLE: 372,
 };
 export const DATA = {
-  STUDENTS: async () => {
-    const students = await JSON.parse(localStorage.getItem(StorageKey.STUDENTS));
-    return students;
-  },
-  GROUPS: async () => {
-    const groups = await JSON.parse(localStorage.getItem(StorageKey.GROUPS));
-    return groups;
-  },
+  STUDENTS: JSON.parse(localStorage.getItem(StorageKey.STUDENTS)),
+  GROUPS: JSON.parse(localStorage.getItem(StorageKey.GROUPS)),
 };
 export const TABLE = {
   ROW_STUDENT: SIZE.ROWS || JSON.parse(localStorage.getItem(StorageKey.STUDENTS)).length,

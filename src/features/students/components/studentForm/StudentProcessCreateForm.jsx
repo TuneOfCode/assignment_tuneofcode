@@ -1,8 +1,8 @@
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
-import React from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import utils from '../../../../utils';
 import {
   countStudentRegistered,
@@ -17,6 +17,7 @@ StudentProcessCreateForm.propTypes = {
 
 function StudentProcessCreateForm(props) {
   const dispatch = useDispatch();
+  const { listStudent } = useSelector((state) => state.student);
   const { enqueueSnackbar } = useSnackbar();
   const handleSubmit = async (values) => {
     try {

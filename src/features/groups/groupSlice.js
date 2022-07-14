@@ -1,6 +1,5 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import groupApi from '../../apis/group.api';
-import { PARAMS } from '../../constants/common.constant';
 import StorageKey from '../../constants/storage.key';
 export const getListGroupBox = createAsyncThunk('groups/getListGroupBox', async () => {
   const groups = await groupApi.getAll();
@@ -40,14 +39,13 @@ export const createGroup = createAsyncThunk('groups/create', async (payload) => 
 export const getGroupDetail = createAsyncThunk('groups/getGroupDetail', async (id) => {
   const groups = await groupApi.getGroupDetail(id);
   const newGroupArray = await groups.data.map((group) => {
-    const { id, name, subject, leader, students } = group;
+    const { id, name, subject, leader } = group;
     // const leadersId = leader.map((item) => item.id);
     return {
       id,
       name,
       subject,
       leader: leader.id,
-      students,
     };
   });
   const data = newGroupArray[0];
@@ -61,20 +59,6 @@ export const destroyGroup = createAsyncThunk('groups/destroy', async (id) => {
   const group = await groupApi.destroy(id);
   return group;
 });
-export const filtersGroup = createAsyncThunk('groups/filters', async (params) => {
-  const groups = await groupApi.getAll(params);
-  const newGroupArray = await groups.data.map((group) => {
-    const { id, name, subject, leader } = group;
-    return {
-      id,
-      name,
-      subject,
-      leader: leader.name,
-    };
-  });
-  localStorage.setItem(StorageKey.GROUPS, JSON.stringify(newGroupArray));
-  return newGroupArray;
-});
 const groupSlice = createSlice({
   name: 'groups',
   initialState: {
@@ -86,9 +70,6 @@ const groupSlice = createSlice({
     listGroup: [],
     params: {
       search: '',
-      filter: '',
-      page: PARAMS.PAGE,
-      limit: PARAMS.LIMIT,
     },
     count_study_groups: 0,
   },
@@ -189,16 +170,6 @@ const groupSlice = createSlice({
       state.status = 'success';
     },
     [destroyGroup.rejected]: (state) => {
-      state.isLoading = false;
-      state.status = 'failure';
-    },
-    [filtersGroup.fulfilled]: (state, action) => {
-      const { data } = action.payload;
-      state.isLoading = false;
-      state.listGroup = data;
-      state.status = 'success';
-    },
-    [filtersGroup.rejected]: (state) => {
       state.isLoading = false;
       state.status = 'failure';
     },

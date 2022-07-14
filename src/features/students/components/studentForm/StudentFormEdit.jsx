@@ -8,29 +8,22 @@ import { Avatar, CssBaseline, Grid, InputAdornment, Typography } from '@mui/mate
 import { Box, Container } from '@mui/system';
 import { isDate, parse } from 'date-fns';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import * as yup from 'yup';
 import DateInput from '../../../../components/input/DateInput';
 import SelectInput from '../../../../components/input/SelectInput';
 import TextInput from '../../../../components/input/TextInput';
-import { getListGroupBox } from '../../../groups/groupSlice';
 StudentFormEdit.propTypes = {
   onSubmit: PropTypes.func,
 };
 
 function StudentFormEdit(props) {
-  const dispatch = useDispatch();
   const { onSubmit } = props;
-  const { studentItem, student_ID } = useSelector((state) => state.student);
+  const { studentItem } = useSelector((state) => state.student);
   const { groupBox } = useSelector((state) => state.group);
 
-  useEffect(() => {
-    dispatch(getListGroupBox());
-    // console.log('>>>> Student Item: ', studentItem);
-    // console.log('>>>> Student ID: ', student_ID);
-  }, [dispatch]);
   const parseDateString = (value, originalValue) => {
     const parsedDate = isDate(originalValue)
       ? originalValue

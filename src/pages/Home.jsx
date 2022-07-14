@@ -1,5 +1,5 @@
-import React from "react";
-import { Header, TabAll } from "../components";
+import React from 'react';
+import { Header, TabAll } from '../components';
 
 const Home = () => {
   return (

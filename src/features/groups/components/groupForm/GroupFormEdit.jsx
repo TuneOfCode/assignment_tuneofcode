@@ -20,11 +20,9 @@ GroupFormCreate.propTypes = {
 function GroupFormCreate(props) {
   const dispatch = useDispatch();
   const { onSubmit } = props;
-  const { groupItem, group_ID } = useSelector((state) => state.group);
+  const { groupItem } = useSelector((state) => state.group);
   const { listLeaderBox } = useSelector((state) => state.student);
-  useEffect(() => {
-    dispatch(getListLeaderBox());
-  }, [dispatch]);
+
   const schema = yup
     .object({
       name: yup.string().required('please enter field name'),

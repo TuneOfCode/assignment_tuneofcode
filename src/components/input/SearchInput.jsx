@@ -1,3 +1,4 @@
+import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 import { Box, IconButton, InputBase, Paper, Typography } from '@mui/material';
 import Proptypes from 'prop-types';
@@ -12,32 +13,39 @@ const SearchInput = (props) => {
   const dispatch = useDispatch();
   const { params } = useSelector((state) => state.student);
   const [values, setValues] = useState('');
+  const [isActiveCloseBtn, setIsActiveCloseBtn] = useState(false);
   const { type } = props;
 
-  const debounce = useDebounce(values, 500);
-
+  const debounce = useDebounce(values, 600);
   const handleChangeSearch = (e) => {
     const value = e.target.value;
     setValues(value);
+    if (value !== '') {
+      setIsActiveCloseBtn(true);
+    } else {
+      setIsActiveCloseBtn(false);
+    }
+  };
+  const handleClickClose = () => {
+    setValues('');
+    setIsActiveCloseBtn(false);
   };
   useEffect(() => {
     dispatch(actions.setSearch(values));
-    setValues(values);
   }, [debounce, values]);
   useEffect(() => {
     const callSearchStudents = async () => {
-      if (!debounce.trim()) {
-        dispatch(getListStudent());
-        dispatch(getListGroup());
-        return;
-      }
       const { search } = params;
-      console.log('>>>> SEARCH: ', search);
       const filters = {
-        // filter: ['ReactJS', 'NodeJS', 'Lararvel'],
         search: search,
       };
-
+      if (!debounce.trim()) {
+        if (params.filter.length > 0) {
+          dispatch(getListStudent(params));
+          dispatch(actions.setIsLoading(false));
+          return;
+        }
+      }
       if (type === 'student') {
         dispatch(getListStudent(filters));
         dispatch(actions.setIsLoading(false));
@@ -79,6 +87,11 @@ const SearchInput = (props) => {
           value={values}
           onChange={(e) => handleChangeSearch(e)}
         />
+        {isActiveCloseBtn && (
+          <IconButton onClick={handleClickClose} sx={{ p: '10px' }} aria-label="menu">
+            <CloseIcon />
+          </IconButton>
+        )}
       </Paper>
     </Box>
   );

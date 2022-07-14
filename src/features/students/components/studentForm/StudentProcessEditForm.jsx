@@ -3,7 +3,6 @@ import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import userApi from '../../../../apis/user.api';
 import utils from '../../../../utils';
 import {
   actions,
