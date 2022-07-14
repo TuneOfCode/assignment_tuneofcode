@@ -327,7 +327,7 @@ const UserService = {
     try {
       return await User.update(payload, { where: { id: inputId } });
     } catch (error) {
-      console.log("Error: ", error);
+      // console.log("Error: ", error);
       return error;
     }
   },

@@ -157,10 +157,19 @@ const UserController = {
       if (req.body.group_ids) {
         await UserService.destroyJoinGroup(req.params.id);
         const data = await UserService.update(req.body, req.params.id);
-        await UserService.joinGroup(req, req.params.id);
         if (data.errors) {
-          return msg(res, data.errors, undefined, undefined, false);
+          if (data.errors) {
+            return msg(
+              res,
+              data.errors[0].message,
+              undefined,
+              undefined,
+              400,
+              false
+            );
+          }
         }
+        await UserService.joinGroup(req, req.params.id);
         const payload = req.body;
         const payloads = { ...payload, id: +req.params.id };
         console.log(">>>>>> PAYLOAD: ", payloads, ">>> ID: ", req.params.id);

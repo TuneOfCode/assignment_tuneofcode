@@ -89,7 +89,7 @@ const GroupController = {
           false
         );
       }
-      if (count_leader_teach_group_equal_four >= 3) {
+      if (count_leader_teach_group_equal_four >= 4) {
         return msg(
           res,
           `Per leader only max teach 4 group`,
@@ -119,8 +119,7 @@ const GroupController = {
   },
   update: async (req, res) => {
     try {
-      const { leader_id } = req.body;
-      const payload = req.body;
+      const { leader_id, name, subject } = req.body;
       if (leader_id) {
         const user = await User.findOne({
           where: {
@@ -128,6 +127,22 @@ const GroupController = {
             is_leader: true,
           },
         });
+        const count_leader_teach_group_equal_four = await Group.count({
+          where: {
+            leader_id: leader_id,
+          },
+          distinct: true,
+        });
+        if (count_leader_teach_group_equal_four >= 4) {
+          return msg(
+            res,
+            `Per leader only max teach 4 group`,
+            undefined,
+            undefined,
+            400,
+            false
+          );
+        }
         if (!user) {
           return msg(
             res,
@@ -150,6 +165,21 @@ const GroupController = {
           false
         );
       }
+      const leaderName = User.findOne({
+        where: {
+          id: leader_id,
+        },
+      });
+      const payload = {
+        id: +req.params.id,
+        name,
+        subject,
+        leader: {
+          id: leader_id,
+          name: leaderName,
+        },
+      };
+      // console.log(">>>>>>>> PAYLOAD OF UPDATE: ", payload);
       return msg(res, "updated successfully", payload);
     } catch (error) {
       return msg(res, error);
